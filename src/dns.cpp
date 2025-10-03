@@ -29,6 +29,7 @@
 
 #include <utility>
 #include <cstdio>
+#include <set>
 #include <tins/dns.h>
 #include <tins/ip_address.h>
 #include <tins/ipv6_address.h>
@@ -340,11 +341,12 @@ uint32_t DNS::compose_name(const uint8_t* ptr, char* out_ptr) const {
     const uint8_t* end = &records_data_[0] + records_data_.size();
     const uint8_t* end_ptr = 0;
     char* current_out_ptr = out_ptr;
-    uint8_t pointer_counter = 0;
+    std::set<const uint8_t*> visited_ptrs;
     while (*ptr) {
-        if (pointer_counter++ > 30){
+        if (!visited_ptrs.insert(ptr).second) {
             throw dns_decompression_pointer_loops();
         }
+
         // It's an offset
         if (((*ptr & 0xc0) == 0xc0)) {
             if (TINS_UNLIKELY(ptr + sizeof(uint16_t) > end)) {
