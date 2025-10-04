@@ -342,7 +342,7 @@ uint32_t DNS::compose_name(const uint8_t* ptr, char* out_ptr) const {
     char* current_out_ptr = out_ptr;
     uint8_t pointer_counter = 0;
     while (*ptr) {
-        if (pointer_counter++ > 30){
+        if (pointer_counter++ > 63){
             throw dns_decompression_pointer_loops();
         }
         // It's an offset
